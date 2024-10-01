@@ -1,75 +1,59 @@
-arr=[[1,0,1,0],[1,1,1,1]]
-hist=[]
-finals=[]
-col=len(arr[0])
-row=len(arr)
-for i in range(0,col):
-    hist.append(arr[0][i])
+arr = [[1, 0, 1, 0], [1, 1, 1, 1]]  # Your matrix
+hist = []
+finals = []
+col = len(arr[0])
+row = len(arr)
 
+for i in range(0, col):
+    hist.append(arr[0][i])
 finals.append(hist)
 
-for i in range(1,row):
-    hist=[]
-    for j in range(0,col):
-        if arr[i][j]==0:
+for i in range(1, row):
+    hist = []
+    for j in range(0, col):
+        if arr[i][j] == 0:
             hist.append(0)
         else:
-            hist.append(finals[i-1][j]+arr[i][j])
-
+            hist.append(finals[i-1][j] + arr[i][j])
     finals.append(hist)
-        
-    
-    print(finals)
 
+print("Histograms (Finals):")
+for row in finals:
+    print(row)
 
+def MAH(arr):
+    n = len(arr)
+    nsl = [-1] * n  # Nearest Smaller to Left (store indices)
+    nsr = [n] * n   # Nearest Smaller to Right (store indices)
 
-def MAH(arr,lst):
-    ngr=[-1]*len(arr)
-
-    stack=[]
-    for i in range(len(arr)-1,-1,-1):
-
-        while len(stack)>0 and stack[-1][0]>=arr[i]:
+    stack = []
+    for i in range(n):
+        while stack and arr[stack[-1]] >= arr[i]:
             stack.pop()
-        if len(stack)==0:
-            pass
-        if len(stack)>0:
-            if stack[-1][0]<arr[i]:
-                ngr[i]=stack[-1][1]
-            
-        stack.append((arr[i],i))
+        if stack:
+            nsl[i] = stack[-1]
+        stack.append(i)
 
-
-    ngl=[-1]*len(arr)
-
-    stack=[]
-    for i in range(len(arr)):
-        while len(stack)>0 and stack[-1][0]>=arr[i]:
+    stack = []
+    for i in range(n-1, -1, -1):
+        while stack and arr[stack[-1]] >= arr[i]:
             stack.pop()
-        if len(stack)==0:
-            pass
-        if len(stack)>0:
-            if stack[-1][0]<arr[i]:
-                ngl[i]=stack[-1][1]
-            
-        stack.append((arr[i],i))
+        if stack:
+            nsr[i] = stack[-1]
+        stack.append(i)
 
-    finals=[]
-    for i in range(len(arr)):
-        if ngr[i]==-1 or ngl[i]==-1:
-            sums=1*arr[i]
-            finals.append(sums)
-        else:
+    max_area = 0
+    for i in range(n):
+        width = nsr[i] - nsl[i] - 1  # Width of the largest rectangle
+        area = width * arr[i]        # Area of the rectangle
+        max_area = max(max_area, area)
 
-            sums=ngr[i]-ngl[i]-1
-            sums=sums*arr[i]
-            finals.append(sums)
+    return max_area
 
-    lst.append(max(finals))
-
-
-
-lst=[] 
+lst = []
 for i in finals:
-    MAH(i,lst)
-print(lst)
+    lst.append(MAH(i))
+
+
+
+print("Maximum Rectangle Area:", max(lst))
